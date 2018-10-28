@@ -104,7 +104,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, Users> implements Us
         user.setNickname(user.getUsername());
         user.setPassword(MD5Utils.gasjEncrypt(user.getPassword()));
 
-        // TODO 为每个用户生成一个唯一的二维码
+        //  为每个用户生成一个唯一的二维码
         String qrCodePath = "D://user"+userId +"qrcode.png";
         // weixin_qrcode:[username]
         qrCodeUtils.createQRCode(qrCodePath,"weixin_qrcode:["+user.getUsername()+"]");
