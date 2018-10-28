@@ -2,6 +2,8 @@ package cn.xxm.controller;
 
 
 import cn.xxm.dto.IMoocJSONResult;
+import cn.xxm.netty.websocket.server.DataContent;
+import cn.xxm.netty.websocket.server.UserChannelRel;
 import cn.xxm.pojo.FriendsRequest;
 import cn.xxm.pojo.MyFriends;
 import cn.xxm.service.FriendsRequestService;
@@ -9,11 +11,15 @@ import cn.xxm.service.MyFriendsService;
 import cn.xxm.service.UsersService;
 import cn.xxm.spring.aop.LoggerManage;
 import cn.xxm.utils.IdWorker;
+import cn.xxm.utils.JSONUtils;
 import cn.xxm.utils.StringUtil;
 import cn.xxm.vo.MyFriendsVo;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
+import enums.MsgActionEnum;
 import enums.OperatorFriendRequestTypeEnum;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,6 +92,17 @@ public class FriendsRequestController {
         friend2.setMyUserId(Long.parseLong(sendUserId));
         friend2.setMyFriendsUserId(Long.parseLong(acceptUserId));
         myFriendsService.insert(friend2);
+
+
+        Channel sendChannel = UserChannelRel.get(sendUserId);
+        if (null != sendChannel) {
+            // 使用webSocket主动推送消息到请求发起者,更新他的通讯录
+            DataContent dataContent = new DataContent();
+            dataContent.setAction(MsgActionEnum.PULL_FRIEND.type);
+            sendChannel.writeAndFlush(new TextWebSocketFrame(JSONUtils.obj2json(dataContent)));
+        }
+
+
     }
 
 

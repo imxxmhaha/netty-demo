@@ -3,6 +3,8 @@ package cn.xxm.dao;
 import cn.xxm.pojo.ChatMsg;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -13,4 +15,9 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  */
 public interface ChatMsgDao extends BaseMapper<ChatMsg> {
 
+    /**
+     * 批量签收消息
+     * @param msgIdList
+     */
+    void batchUpdateMsgSign(List<String> msgIdList);
 }
